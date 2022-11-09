@@ -8,14 +8,18 @@ import (
 type File struct {
 	Package    string
 	Imports    Imports
+	Funcs      []Implementation
 	Interfaces []Interface
 	Structs    []Struct
 }
 
 func (f File) String() string {
 	var sb strings.Builder
-	sb.WriteString("package " + f.Package + "\n\n")
+	sb.WriteString("package " + f.Package + "\n")
 	sb.WriteString(f.Imports.String())
+	for i := range f.Funcs {
+		sb.WriteString(f.Funcs[i].String())
+	}
 	for i := range f.Interfaces {
 		sb.WriteString(f.Interfaces[i].String())
 	}
@@ -32,15 +36,15 @@ func (imports Imports) String() string {
 		return ""
 	}
 	if len(imports) == 1 {
-		return fmt.Sprintf("import %s\n", imports[0].String())
+		return fmt.Sprintf("\nimport %s", imports[0].String())
 	}
 	var sb strings.Builder
-	sb.WriteString("import (\n")
+	sb.WriteString("\nimport (\n")
 	for j := range imports {
 		sb.WriteString("\t")
 		sb.WriteString(imports[j].String())
 	}
-	sb.WriteString(")\n\n")
+	sb.WriteString(")\n")
 	return sb.String()
 }
 
@@ -68,14 +72,14 @@ type Interface struct {
 
 func (i Interface) String() string {
 	var sb strings.Builder
-	sb.WriteString("type " + i.Name + " interface {")
+	sb.WriteString("\ntype " + i.Name + " interface {")
 	if len(i.Methods) > 0 {
 		sb.WriteString("\n")
 	}
 	for j := range i.Methods {
-		sb.WriteString(i.Methods[j].String())
+		sb.WriteString("\t" + i.Methods[j].String() + "\n")
 	}
-	sb.WriteString("}\n\n")
+	sb.WriteString("}\n")
 	return sb.String()
 }
 
@@ -87,7 +91,7 @@ type Method struct {
 
 func (m Method) String() string {
 	var sb strings.Builder
-	sb.WriteString("\t" + m.Name)
+	sb.WriteString(m.Name)
 	sb.WriteString("(")
 	sb.WriteString(m.Params.String())
 	sb.WriteString(")")
@@ -101,8 +105,6 @@ func (m Method) String() string {
 			sb.WriteString(")")
 		}
 	}
-	sb.WriteString("\n")
-
 	return sb.String()
 }
 
@@ -132,13 +134,14 @@ func (a Arg) String() string {
 }
 
 type Struct struct {
-	Name   string
-	Fields []Field
+	Name            string
+	Fields          []Field
+	Implementations []Implementation
 }
 
 func (s Struct) String() string {
 	var sb strings.Builder
-	sb.WriteString("type ")
+	sb.WriteString("\ntype ")
 	sb.WriteString(s.Name)
 	sb.WriteString(" struct {")
 
@@ -149,7 +152,11 @@ func (s Struct) String() string {
 		sb.WriteString(s.Fields[i].String())
 	}
 
-	sb.WriteString("}\n\n")
+	sb.WriteString("}\n")
+
+	for i := range s.Implementations {
+		sb.WriteString(s.Implementations[i].String())
+	}
 	return sb.String()
 }
 
@@ -172,5 +179,34 @@ func (f Field) String() string {
 		sb.WriteString(f.Tag)
 	}
 	sb.WriteString("\n")
+	return sb.String()
+}
+
+type Implementation struct {
+	StructAlias string
+	StructName  string
+	Func        Method
+	CodeLines   []string
+}
+
+func (i Implementation) String() string {
+	var sb strings.Builder
+	sb.WriteString("\nfunc ")
+	if i.StructName != "" {
+		sb.WriteString("(")
+		if i.StructAlias != "" {
+			sb.WriteString(i.StructAlias + " ")
+		}
+		sb.WriteString(i.StructName)
+		sb.WriteString(") ")
+	}
+	sb.WriteString(i.Func.String())
+	sb.WriteString(" {\n")
+	for j := range i.CodeLines {
+		sb.WriteString("\t")
+		sb.WriteString(i.CodeLines[j])
+		sb.WriteString("\n")
+	}
+	sb.WriteString("}\n")
 	return sb.String()
 }

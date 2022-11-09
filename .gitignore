@@ -1,3 +1,6 @@
+# Build binary
+microcli
+
 # Binaries for programs and plugins
 *.exe
 *.exe~

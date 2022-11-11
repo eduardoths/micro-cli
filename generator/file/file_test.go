@@ -1,10 +1,10 @@
-package generate_test
+package file_test
 
 import (
 	"fmt"
 	"testing"
 
-	file "github.com/eduardoths/micro-cli/generator/file"
+	"github.com/eduardoths/micro-cli/generator/file"
 )
 
 func TestFile_String(t *testing.T) {

@@ -4,30 +4,30 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/eduardoths/micro-cli/services/generate"
+	file "github.com/eduardoths/micro-cli/generator/file"
 )
 
 func TestFile_String(t *testing.T) {
 	type testCase struct {
 		it   string
-		file generate.File
+		file file.File
 		want string
 	}
 
 	tc := []testCase{
 		{
 			it: "should return a file that has only a package",
-			file: generate.File{
+			file: file.File{
 				Package: "teste",
 			},
 			want: "package teste\n",
 		},
 		{
 			it: "should return a file with one import",
-			file: generate.File{
+			file: file.File{
 				Package: "test",
-				Imports: generate.Imports{
-					generate.Import{Path: "strings"},
+				Imports: file.Imports{
+					file.Import{Path: "strings"},
 				},
 			},
 			want: "package test\n" +
@@ -35,10 +35,10 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with one import with alias",
-			file: generate.File{
+			file: file.File{
 				Package: "test",
-				Imports: generate.Imports{
-					generate.Import{Path: "strings", Name: "str"},
+				Imports: file.Imports{
+					file.Import{Path: "strings", Name: "str"},
 				},
 			},
 			want: "package test\n\n" +
@@ -46,11 +46,11 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with two imports",
-			file: generate.File{
+			file: file.File{
 				Package: "test",
-				Imports: generate.Imports{
-					generate.Import{Path: "strings", Name: "str"},
-					generate.Import{Path: "errors"},
+				Imports: file.Imports{
+					file.Import{Path: "strings", Name: "str"},
+					file.Import{Path: "errors"},
 				},
 			},
 			want: "package test\n\n" +
@@ -61,14 +61,14 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with one function",
-			file: generate.File{
+			file: file.File{
 				Package: "test",
-				Imports: generate.Imports{
+				Imports: file.Imports{
 					{Path: "fmt"},
 				},
-				Funcs: []generate.Implementation{
+				Funcs: []file.Implementation{
 					{
-						Func: generate.Method{
+						Func: file.Method{
 							Name: "main",
 						},
 						CodeLines: []string{
@@ -85,19 +85,19 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with method implementation",
-			file: generate.File{
+			file: file.File{
 				Package: "test",
-				Imports: generate.Imports{
+				Imports: file.Imports{
 					{Path: "fmt"},
 				},
-				Funcs: []generate.Implementation{
+				Funcs: []file.Implementation{
 					{
 						StructAlias: "h",
 						StructName:  "*Hello",
-						Func: generate.Method{
+						Func: file.Method{
 							Name:    "SayHello",
-							Params:  generate.Args{{Name: "name", Type: "string"}},
-							Results: generate.Args{{Type: "string"}},
+							Params:  file.Args{{Name: "name", Type: "string"}},
+							Results: file.Args{{Type: "string"}},
 						},
 						CodeLines: []string{
 							"fmt.Printf(\"Hello, %s!\", name)",
@@ -113,9 +113,9 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with an empty interface",
-			file: generate.File{
+			file: file.File{
 				Package: "test",
-				Interfaces: []generate.Interface{
+				Interfaces: []file.Interface{
 					{
 						Name: "Xpto",
 					},
@@ -126,12 +126,12 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with an interface containing one method without params or results",
-			file: generate.File{
+			file: file.File{
 				Package: "test",
-				Interfaces: []generate.Interface{
+				Interfaces: []file.Interface{
 					{
 						Name: "Xpto",
-						Methods: []generate.Method{
+						Methods: []file.Method{
 							{Name: "Create"},
 						},
 					},
@@ -144,15 +144,15 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with an interface containing one method with one named param",
-			file: generate.File{
+			file: file.File{
 				Package: "test",
-				Interfaces: []generate.Interface{
+				Interfaces: []file.Interface{
 					{
 						Name: "Xpto",
-						Methods: []generate.Method{
+						Methods: []file.Method{
 							{
 								Name: "Create",
-								Params: generate.Args{
+								Params: file.Args{
 									{
 										Name: "s",
 										Type: "string",
@@ -170,15 +170,15 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with an interface containing one method with one unnamed param",
-			file: generate.File{
+			file: file.File{
 				Package: "test",
-				Interfaces: []generate.Interface{
+				Interfaces: []file.Interface{
 					{
 						Name: "Xpto",
-						Methods: []generate.Method{
+						Methods: []file.Method{
 							{
 								Name: "Create",
-								Params: generate.Args{
+								Params: file.Args{
 									{Type: "string"},
 								},
 							},
@@ -193,15 +193,15 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with an interface containing one method with two params",
-			file: generate.File{
+			file: file.File{
 				Package: "test",
-				Interfaces: []generate.Interface{
+				Interfaces: []file.Interface{
 					{
 						Name: "Xpto",
-						Methods: []generate.Method{
+						Methods: []file.Method{
 							{
 								Name: "Create",
-								Params: generate.Args{
+								Params: file.Args{
 									{Name: "s", Type: "string"},
 									{Name: "i", Type: "int"},
 								},
@@ -217,15 +217,15 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with an interface containing one method with one named return",
-			file: generate.File{
+			file: file.File{
 				Package: "test",
-				Interfaces: []generate.Interface{
+				Interfaces: []file.Interface{
 					{
 						Name: "Xpto",
-						Methods: []generate.Method{
+						Methods: []file.Method{
 							{
 								Name: "Create",
-								Results: generate.Args{
+								Results: file.Args{
 									{Name: "err", Type: "error"},
 								},
 							},
@@ -240,15 +240,15 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with an interface containing one method with one unnamed return",
-			file: generate.File{
+			file: file.File{
 				Package: "test",
-				Interfaces: []generate.Interface{
+				Interfaces: []file.Interface{
 					{
 						Name: "Xpto",
-						Methods: []generate.Method{
+						Methods: []file.Method{
 							{
 								Name: "Create",
-								Results: generate.Args{
+								Results: file.Args{
 									{Type: "error"},
 								},
 							},
@@ -263,15 +263,15 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with an interface containing one method with two unnamed returns",
-			file: generate.File{
+			file: file.File{
 				Package: "test",
-				Interfaces: []generate.Interface{
+				Interfaces: []file.Interface{
 					{
 						Name: "Xpto",
-						Methods: []generate.Method{
+						Methods: []file.Method{
 							{
 								Name: "Create",
-								Results: generate.Args{
+								Results: file.Args{
 									{Type: "bool"},
 									{Type: "error"},
 								},
@@ -287,15 +287,15 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with an interface containing one method with three named returns",
-			file: generate.File{
+			file: file.File{
 				Package: "test",
-				Interfaces: []generate.Interface{
+				Interfaces: []file.Interface{
 					{
 						Name: "Xpto",
-						Methods: []generate.Method{
+						Methods: []file.Method{
 							{
 								Name: "Create",
-								Results: generate.Args{
+								Results: file.Args{
 									{Type: "bool", Name: "ok"},
 									{Type: "int", Name: "n"},
 									{Type: "error", Name: "err"},
@@ -312,20 +312,20 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with an interface containing three methods",
-			file: generate.File{
+			file: file.File{
 				Package: "test",
-				Interfaces: []generate.Interface{
+				Interfaces: []file.Interface{
 					{
 						Name: "Xpto",
-						Methods: []generate.Method{
+						Methods: []file.Method{
 							{
 								Name: "Create",
-								Params: generate.Args{
+								Params: file.Args{
 									{Type: "structs.Example", Name: "xpto1"},
 									{Type: "string", Name: "name"},
 									{Type: "int", Name: "i"},
 								},
-								Results: generate.Args{
+								Results: file.Args{
 									{Type: "bool", Name: "ok"},
 									{Type: "int", Name: "n"},
 									{Type: "error", Name: "err"},
@@ -333,12 +333,12 @@ func TestFile_String(t *testing.T) {
 							},
 							{
 								Name: "Update",
-								Params: generate.Args{
+								Params: file.Args{
 									{Type: "structs.Example", Name: "xpto1"},
 									{Type: "string", Name: "name"},
 									{Type: "int", Name: "i"},
 								},
-								Results: generate.Args{
+								Results: file.Args{
 									{Type: "bool", Name: "ok"},
 									{Type: "int", Name: "n"},
 									{Type: "error", Name: "err"},
@@ -346,12 +346,12 @@ func TestFile_String(t *testing.T) {
 							},
 							{
 								Name: "Delete",
-								Params: generate.Args{
+								Params: file.Args{
 									{Type: "structs.Example", Name: "xpto1"},
 									{Type: "string", Name: "name"},
 									{Type: "int", Name: "i"},
 								},
-								Results: generate.Args{
+								Results: file.Args{
 									{Type: "bool", Name: "ok"},
 									{Type: "int", Name: "n"},
 									{Type: "error", Name: "err"},
@@ -370,9 +370,9 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with two interfaces",
-			file: generate.File{
+			file: file.File{
 				Package: "test",
-				Interfaces: []generate.Interface{
+				Interfaces: []file.Interface{
 					{Name: "XptoOne"},
 					{Name: "XptoTwo"},
 				},
@@ -383,9 +383,9 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with an empty struct",
-			file: generate.File{
+			file: file.File{
 				Package: "test",
-				Structs: []generate.Struct{
+				Structs: []file.Struct{
 					{Name: "Xpto"},
 				},
 			},
@@ -394,12 +394,12 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with one field",
-			file: generate.File{
+			file: file.File{
 				Package: "test",
-				Structs: []generate.Struct{
+				Structs: []file.Struct{
 					{
 						Name: "Xpto",
-						Fields: []generate.Field{
+						Fields: []file.Field{
 							{Name: "Field"},
 						},
 					},
@@ -412,12 +412,12 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with one field with type",
-			file: generate.File{
+			file: file.File{
 				Package: "test",
-				Structs: []generate.Struct{
+				Structs: []file.Struct{
 					{
 						Name: "Xpto",
-						Fields: []generate.Field{
+						Fields: []file.Field{
 							{Name: "Field", Type: "string"},
 						},
 					},
@@ -430,12 +430,12 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with one field with type and tag",
-			file: generate.File{
+			file: file.File{
 				Package: "test",
-				Structs: []generate.Struct{
+				Structs: []file.Struct{
 					{
 						Name: "Xpto",
-						Fields: []generate.Field{
+						Fields: []file.Field{
 							{Name: "Field", Type: "string", Tag: "`json:\"-\"`"},
 						},
 					},
@@ -448,12 +448,12 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with three fields",
-			file: generate.File{
+			file: file.File{
 				Package: "structs",
-				Structs: []generate.Struct{
+				Structs: []file.Struct{
 					{
 						Name: "Xpto",
-						Fields: []generate.Field{
+						Fields: []file.Field{
 							{Name: "Str", Type: "string", Tag: "`json:\"-\"`"},
 							{Name: "Int", Type: "int"},
 							{Name: "pkg.Field"},
@@ -470,18 +470,18 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with a struct with one implementation",
-			file: generate.File{
+			file: file.File{
 				Package: "structs",
-				Structs: []generate.Struct{
+				Structs: []file.Struct{
 					{
 						Name: "Xpto",
-						Implementations: []generate.Implementation{
+						Implementations: []file.Implementation{
 							{
 								StructAlias: "x",
 								StructName:  "*Xpto",
-								Func: generate.Method{
+								Func: file.Method{
 									Name:   "SetString",
-									Params: generate.Args{{Name: "s", Type: "string"}},
+									Params: file.Args{{Name: "s", Type: "string"}},
 								},
 								CodeLines: []string{
 									"x.ExampleString = s",
@@ -501,23 +501,23 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with a struct with two implementations",
-			file: generate.File{
+			file: file.File{
 				Package: "structs",
-				Structs: []generate.Struct{
+				Structs: []file.Struct{
 					{
 						Name: "Xpto",
-						Implementations: []generate.Implementation{
+						Implementations: []file.Implementation{
 							{
 								StructAlias: "x",
 								StructName:  "Xpto",
-								Func: generate.Method{
+								Func: file.Method{
 									Name: "Foo",
 								},
 							},
 							{
 								StructAlias: "x",
 								StructName:  "Xpto",
-								Func: generate.Method{
+								Func: file.Method{
 									Name: "Bar",
 								},
 							},
@@ -534,16 +534,16 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a file with two empty structs",
-			file: generate.File{
+			file: file.File{
 				Package: "test",
-				Structs: []generate.Struct{
+				Structs: []file.Struct{
 					{
 						Name: "Xpto",
-						Implementations: []generate.Implementation{
+						Implementations: []file.Implementation{
 							{
 								StructAlias: "x",
 								StructName:  "Xpto",
-								Func: generate.Method{
+								Func: file.Method{
 									Name: "Foo",
 								},
 							},
@@ -551,11 +551,11 @@ func TestFile_String(t *testing.T) {
 					},
 					{
 						Name: "XptoAgain",
-						Implementations: []generate.Implementation{
+						Implementations: []file.Implementation{
 							{
 								StructAlias: "xa",
 								StructName:  "XptoAgain",
-								Func: generate.Method{
+								Func: file.Method{
 									Name: "Bar",
 								},
 							},
@@ -573,44 +573,44 @@ func TestFile_String(t *testing.T) {
 		},
 		{
 			it: "should return a complete file",
-			file: generate.File{
+			file: file.File{
 				Package: "complextest",
-				Imports: []generate.Import{
+				Imports: []file.Import{
 					{Path: "github.com/eduardoths/my_structs/structs"},
 					{Name: "mystructs", Path: "github.com/eduardoths/my_structs"},
 				},
-				Interfaces: []generate.Interface{
+				Interfaces: []file.Interface{
 					{
 						Name: "Xpto",
-						Methods: []generate.Method{
+						Methods: []file.Method{
 							{
 								Name: "Done",
-								Params: generate.Args{
+								Params: file.Args{
 									{Name: "s", Type: "structs.Struct"},
 								},
-								Results: generate.Args{{Type: "error"}},
+								Results: file.Args{{Type: "error"}},
 							},
 							{
 								Name:    "String",
-								Results: generate.Args{{Type: "string"}},
+								Results: file.Args{{Type: "string"}},
 							},
 						},
 					},
 					{
 						Name: "Err",
-						Methods: []generate.Method{
+						Methods: []file.Method{
 							{
 								Name:    "Error",
-								Results: generate.Args{{Type: "string"}},
+								Results: file.Args{{Type: "string"}},
 							},
 						},
 					},
 					{Name: "empty"},
 				},
-				Structs: []generate.Struct{
+				Structs: []file.Struct{
 					{
 						Name: "Foo",
-						Fields: []generate.Field{
+						Fields: []file.Field{
 							{
 								Name: "mystructs.Foo",
 							},
@@ -618,7 +618,7 @@ func TestFile_String(t *testing.T) {
 					},
 					{
 						Name: "Bar",
-						Fields: []generate.Field{
+						Fields: []file.Field{
 							{
 								Name: "Ok",
 								Type: "bool",

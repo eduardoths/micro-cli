@@ -61,3 +61,11 @@ func (en EntityName) FileImport() file.Import {
 		Name: importName,
 	}
 }
+
+func (en EntityName) FilePath() string {
+	return utils.MergePaths(en.dirPath, en.snakeCase()) + ".go"
+}
+
+func (en EntityName) snakeCase() string {
+	return utils.ToSnakeCase(en.name)
+}

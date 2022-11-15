@@ -166,3 +166,38 @@ func TestEntityName_FileImport(t *testing.T) {
 		})
 	}
 }
+
+func TestEntityName_FilePath(t *testing.T) {
+	type testCase struct {
+		it   string
+		in   entity.EntityName
+		want string
+	}
+
+	tc := []testCase{
+		{
+			it:   "should return file path as pascal case",
+			in:   entity.NewEntityName("PascalCase", "", ""),
+			want: "./pascal_case.go",
+		},
+		{
+			it:   "should ignore base pkg",
+			in:   entity.NewEntityName("PascalCase", "", "github.com/eduardoths/"),
+			want: "./pascal_case.go",
+		},
+		{
+			it:   "should have the correct file path",
+			in:   entity.NewEntityName("PascalCase", "src/structs/", "github.com/eduardoths/"),
+			want: "src/structs/pascal_case.go",
+		},
+	}
+
+	for _, c := range tc {
+		t.Run(c.it, func(t *testing.T) {
+			actual := c.in.FilePath()
+			if c.want != actual {
+				utils.Error(t, c.want, actual)
+			}
+		})
+	}
+}

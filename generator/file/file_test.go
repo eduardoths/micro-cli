@@ -55,8 +55,8 @@ func TestFile_String(t *testing.T) {
 			},
 			want: "package test\n\n" +
 				"import (\n" +
-				fmt.Sprintf("\tstr %s\n", `"strings"`) +
 				fmt.Sprintf("\t%s\n", `"errors"`) +
+				fmt.Sprintf("\tstr %s\n", `"strings"`) +
 				")\n",
 		},
 		{
@@ -630,8 +630,8 @@ func TestFile_String(t *testing.T) {
 			},
 			want: "package complextest\n\n" +
 				"import (\n" +
-				"\t\"github.com/eduardoths/my_structs/structs\"\n" +
 				"\tmystructs \"github.com/eduardoths/my_structs\"\n" +
+				"\t\"github.com/eduardoths/my_structs/structs\"\n" +
 				")\n\n" +
 				"type Xpto interface {\n" +
 				"\tDone(s structs.Struct) error\n" +

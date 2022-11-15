@@ -2,6 +2,7 @@ package file
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -38,15 +39,35 @@ func (imports Imports) String() string {
 	if len(imports) == 1 {
 		return fmt.Sprintf("\nimport %s", imports[0].String())
 	}
+	uniqueImports := imports.removeDuplicates()
+	uniqueImports.sort()
 	var sb strings.Builder
 	sb.WriteString("\nimport (\n")
-	for j := range imports {
+	for i := range uniqueImports {
 		sb.WriteString("\t")
-		sb.WriteString(imports[j].String())
+		sb.WriteString(uniqueImports[i].String())
 	}
 	sb.WriteString(")\n")
 	return sb.String()
 }
+
+func (imports Imports) removeDuplicates() Imports {
+	m := make(map[string]Import)
+	for _, imp := range imports {
+		m[imp.String()] = imp
+	}
+
+	uniqueImports := make(Imports, 0, len(m))
+	for _, v := range m {
+		uniqueImports = append(uniqueImports, v)
+	}
+	return uniqueImports
+}
+
+func (x Imports) sort()              { sort.Sort(x) }
+func (x Imports) Len() int           { return len(x) }
+func (x Imports) Less(i, j int) bool { return x[i].Path < x[j].Path }
+func (x Imports) Swap(i, j int)      { x[i], x[j] = x[j], x[i] }
 
 type Import struct {
 	Path string

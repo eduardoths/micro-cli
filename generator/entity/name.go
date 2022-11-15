@@ -38,10 +38,10 @@ func (en EntityName) CamelCase() string {
 }
 
 func (en EntityName) Type() string {
-	return en.importName() + "." + en.PascalCase()
+	return en.ImportName() + "." + en.PascalCase()
 }
 
-func (en EntityName) importName() string {
+func (en EntityName) ImportName() string {
 	fullPkg := utils.MergePaths(en.basePkg, en.dirPath)
 	pkgDirs := strings.Split(strings.TrimRight(fullPkg, "/"), "/")
 	lastDir := pkgDirs[len(pkgDirs)-1]
@@ -51,7 +51,7 @@ func (en EntityName) importName() string {
 func (en EntityName) FileImport() file.Import {
 	path := strings.TrimRight(utils.MergePaths(en.basePkg, en.dirPath), "/")
 
-	importName := en.importName()
+	importName := en.ImportName()
 	if strings.HasSuffix(path, importName) {
 		importName = ""
 	}
@@ -63,9 +63,22 @@ func (en EntityName) FileImport() file.Import {
 }
 
 func (en EntityName) FilePath() string {
-	return utils.MergePaths(en.dirPath, en.snakeCase()) + ".go"
+	return utils.MergePaths(en.dirPath, en.SnakeCase()) + ".go"
 }
 
-func (en EntityName) snakeCase() string {
+func (en EntityName) SnakeCase() string {
 	return utils.ToSnakeCase(en.name)
+}
+
+func (en EntityName) Alias() string {
+	pascalCase := en.PascalCase()
+	pascalRunes := []rune(pascalCase)
+	upperPascalCaseRunes := make([]rune, 0)
+
+	for _, r := range pascalRunes {
+		if unicode.ToUpper(r) == r {
+			upperPascalCaseRunes = append(upperPascalCaseRunes, r)
+		}
+	}
+	return strings.ToLower(string(upperPascalCaseRunes))
 }

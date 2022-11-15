@@ -201,3 +201,33 @@ func TestEntityName_FilePath(t *testing.T) {
 		})
 	}
 }
+
+func TestEntityName_Alias(t *testing.T) {
+	type testCase struct {
+		it   string
+		in   entity.EntityName
+		want string
+	}
+
+	tc := []testCase{
+		{
+			it:   "should return a simples alias",
+			in:   entity.NewEntityName("Struct", "", ""),
+			want: "s",
+		},
+		{
+			it:   "should return correct alias",
+			in:   entity.NewEntityName("an_example_struct_repository", "", ""),
+			want: "aesr",
+		},
+	}
+
+	for _, c := range tc {
+		t.Run(c.it, func(t *testing.T) {
+			actual := c.in.Alias()
+			if c.want != actual {
+				utils.Error(t, c.want, actual)
+			}
+		})
+	}
+}

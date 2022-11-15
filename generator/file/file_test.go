@@ -45,6 +45,18 @@ func TestFile_String(t *testing.T) {
 				`import str "strings"` + "\n",
 		},
 		{
+			it: "should remove duplicate imports",
+			file: file.File{
+				Package: "test",
+				Imports: file.Imports{
+					{Path: "errors"},
+					{Path: "errors"},
+				},
+			},
+			want: "package test\n\n" +
+				`import "errors"` + "\n",
+		},
+		{
 			it: "should return a file with two imports",
 			file: file.File{
 				Package: "test",

@@ -33,19 +33,19 @@ func (f File) String() string {
 type Imports []Import
 
 func (imports Imports) String() string {
+	imports = imports.removeDuplicates()
+	imports.sort()
 	if len(imports) == 0 {
 		return ""
 	}
 	if len(imports) == 1 {
 		return fmt.Sprintf("\nimport %s", imports[0].String())
 	}
-	uniqueImports := imports.removeDuplicates()
-	uniqueImports.sort()
 	var sb strings.Builder
 	sb.WriteString("\nimport (\n")
-	for i := range uniqueImports {
+	for i := range imports {
 		sb.WriteString("\t")
-		sb.WriteString(uniqueImports[i].String())
+		sb.WriteString(imports[i].String())
 	}
 	sb.WriteString(")\n")
 	return sb.String()

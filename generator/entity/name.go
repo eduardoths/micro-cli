@@ -3,6 +3,8 @@ package entity
 import (
 	"strings"
 	"unicode"
+
+	"github.com/eduardoths/micro-cli/utils"
 )
 
 type EntityName struct {
@@ -32,4 +34,15 @@ func (en EntityName) CamelCase() string {
 	camelRunes = append(camelRunes, unicode.ToLower(pascalRunes[0]))
 	camelRunes = append(camelRunes, pascalRunes[1:]...)
 	return string(camelRunes)
+}
+
+func (en EntityName) Type() string {
+	return en.importName() + "." + en.PascalCase()
+}
+
+func (en EntityName) importName() string {
+	fullPkg := utils.MergePaths(en.basePkg, en.dirPath)
+	pkgDirs := strings.Split(strings.TrimRight(fullPkg, "/"), "/")
+	lastDir := pkgDirs[len(pkgDirs)-1]
+	return strings.ReplaceAll(lastDir, "_", "")
 }

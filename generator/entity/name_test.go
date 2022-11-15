@@ -76,3 +76,48 @@ func TestEntityName_CamelCase(t *testing.T) {
 		})
 	}
 }
+
+func TestEntityName_Type(t *testing.T) {
+	type testCase struct {
+		it   string
+		in   entity.EntityName
+		want string
+	}
+
+	tc := []testCase{
+		{
+			it:   "should return structs.XptoStruct",
+			in:   entity.NewEntityName("xptoStruct", "structs", ""),
+			want: "structs.XptoStruct",
+		},
+		{
+			it:   "should remove trailing '/' from pkg",
+			in:   entity.NewEntityName("xptoStruct", "xpto/structs", ""),
+			want: "structs.XptoStruct",
+		},
+		{
+			it:   "should use base pkg if dirPath is empty",
+			in:   entity.NewEntityName("Struct", "", "github.com/eduardoths/xpto"),
+			want: "xpto.Struct",
+		},
+		{
+			it:   "should convert entity name from snake case to pascal case",
+			in:   entity.NewEntityName("xpto_struct", "", "github.com/eduardoths/xpto"),
+			want: "xpto.XptoStruct",
+		},
+		{
+			it:   "should remove underscores before pkg name",
+			in:   entity.NewEntityName("Struct", "", "github.com/eduardoths/xpto_pkg"),
+			want: "xptopkg.Struct",
+		},
+	}
+
+	for _, c := range tc {
+		t.Run(c.it, func(t *testing.T) {
+			actual := c.in.Type()
+			if c.want != actual {
+				utils.Error(t, c.want, actual)
+			}
+		})
+	}
+}

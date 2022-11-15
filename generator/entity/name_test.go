@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/eduardoths/micro-cli/generator/entity"
+	"github.com/eduardoths/micro-cli/generator/file"
 	"github.com/eduardoths/micro-cli/tests/utils"
 )
 
@@ -115,6 +116,50 @@ func TestEntityName_Type(t *testing.T) {
 	for _, c := range tc {
 		t.Run(c.it, func(t *testing.T) {
 			actual := c.in.Type()
+			if c.want != actual {
+				utils.Error(t, c.want, actual)
+			}
+		})
+	}
+}
+
+func TestEntityName_FileImport(t *testing.T) {
+	type testCase struct {
+		it   string
+		in   entity.EntityName
+		want file.Import
+	}
+
+	tc := []testCase{
+		{
+			it: "should return a file import for structs pkg",
+			in: entity.NewEntityName("Xpto", "src/structs", "github.com/eduardoths/microservice"),
+			want: file.Import{
+				Path: "github.com/eduardoths/microservice/src/structs",
+				Name: "",
+			},
+		},
+		{
+			it: "should return a file import for structs pkg and remove trailing '/'",
+			in: entity.NewEntityName("Xpto", "src/structs/", "github.com/eduardoths/microservice"),
+			want: file.Import{
+				Path: "github.com/eduardoths/microservice/src/structs",
+				Name: "",
+			},
+		},
+		{
+			it: "should have an import name if it ends with snake_case path",
+			in: entity.NewEntityName("XptoStructRepository", "src/repositories/xpto_struct", "github.com/eduardoths/microservice"),
+			want: file.Import{
+				Path: "github.com/eduardoths/microservice/src/repositories/xpto_struct",
+				Name: "xptostruct",
+			},
+		},
+	}
+
+	for _, c := range tc {
+		t.Run(c.it, func(t *testing.T) {
+			actual := c.in.FileImport()
 			if c.want != actual {
 				utils.Error(t, c.want, actual)
 			}

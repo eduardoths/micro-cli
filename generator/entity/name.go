@@ -4,6 +4,7 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/eduardoths/micro-cli/generator/file"
 	"github.com/eduardoths/micro-cli/utils"
 )
 
@@ -45,4 +46,18 @@ func (en EntityName) importName() string {
 	pkgDirs := strings.Split(strings.TrimRight(fullPkg, "/"), "/")
 	lastDir := pkgDirs[len(pkgDirs)-1]
 	return strings.ReplaceAll(lastDir, "_", "")
+}
+
+func (en EntityName) FileImport() file.Import {
+	path := strings.TrimRight(utils.MergePaths(en.basePkg, en.dirPath), "/")
+
+	importName := en.importName()
+	if strings.HasSuffix(path, importName) {
+		importName = ""
+	}
+
+	return file.Import{
+		Path: path,
+		Name: importName,
+	}
 }
